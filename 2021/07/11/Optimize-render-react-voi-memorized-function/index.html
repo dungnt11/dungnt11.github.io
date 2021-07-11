@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Mở đầuĐối với những bạn mới code React, việc làm cho nó chạy đúng đã là một cái gì đó hết sức vui vẻ rồi, và cái gì đến cũng sẽ đến, rồi ai cũng phải quan tâm cách mà React render như nào, làm sao để">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Optimize render react với memorized function">
+<meta property="og:url" content="https://dungnt11.github.io/2021/07/11/Optimize-render-react-voi-memorized-function/index.html">
+<meta property="og:site_name" content="Dũng Blog">
+<meta property="og:description" content="Mở đầuĐối với những bạn mới code React, việc làm cho nó chạy đúng đã là một cái gì đó hết sức vui vẻ rồi, và cái gì đến cũng sẽ đến, rồi ai cũng phải quan tâm cách mà React render như nào, làm sao để">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://dungnt11.github.io/images/pasted-21.png">
+<meta property="og:image" content="https://dungnt11.github.io/images/pasted-22.png">
+<meta property="og:image" content="https://www.qed42.com/sites/default/files/2020-03/React%20Memoization%20.png">
+<meta property="article:published_time" content="2021-07-11T16:17:25.000Z">
+<meta property="article:modified_time" content="2021-07-11T16:48:50.838Z">
+<meta property="article:author" content="Dung Nguyen">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dungnt11.github.io/images/pasted-21.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://dungnt11.github.io/2021/07/11/Optimize-render-react-voi-memorized-function/"/>
+
+
+
+
+
+  <title>Optimize render react với memorized function | Dũng Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Dũng Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://dungnt11.github.io/2021/07/11/Optimize-render-react-voi-memorized-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dung Nguyen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dũng Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Optimize render react với memorized function</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-07-11T16:17:25+00:00">
+                2021-07-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Mo-dau"><a href="#Mo-dau" class="headerlink" title="Mở đầu"></a>Mở đầu</h3><p>Đối với những bạn mới code React, việc làm cho nó chạy đúng đã là một cái gì đó hết sức vui vẻ rồi, và cái gì đến cũng sẽ đến, rồi ai cũng phải quan tâm cách mà React render như nào, làm sao để tránh bị render quá nhiều. Nói thì rất dễ, nhưng khi gặp phải một project đủ lớn, các bạn mới thấy việc kiểm soát render quan trọng như nào. Nếu không cẩn thận, rất có thể chúng ta sẽ rơi vào một tình trạng, đó là render forever 😅.</p>
+<p><img src="/images/pasted-21.png" alt="upload successful"></p>
+<p>Và mọi việc lớn đều bắt đầu bởi việc nhỏ, và hôm nay, mình sẽ đi bàn về một vấn đề, là làm sao để optimize render component.</p>
+<a id="more"></a>
+<h3 id="Memorized-function"><a href="#Memorized-function" class="headerlink" title="Memorized function"></a>Memorized function</h3><p>Trước hết, chúng ta hãy xem hình sau</p>
+<p><img src="/images/pasted-22.png" alt="upload successful"><br>Hiểu đơn giản, thì memorized function là việc ghi nhớ function vào bộ nhớ, để function không bị khởi tạo lại. Gượng đã, nếu hiểu như vậy, thì chúng ta triển khai như nào?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">memorizedFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">const</span> cache = &#123;&#125;;</span><br><span class="line">       </span><br><span class="line">       <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">       	<span class="keyword">return</span> (&#123;</span><br><span class="line">           	setCache(path, val) &#123;</span><br><span class="line">               	<span class="keyword">if</span> (<span class="string">'key'</span> <span class="keyword">in</span> cache) &#123;</span><br><span class="line">                   	<span class="keyword">return</span> cache[key];</span><br><span class="line">                   &#125;</span><br><span class="line">               	cache[key] = val;</span><br><span class="line">                   <span class="keyword">return</span> val;</span><br><span class="line">               &#125;,</span><br><span class="line">               <span class="keyword">get</span> cacheByKey() &#123;</span><br><span class="line">               	<span class="keyword">if</span> (!(<span class="string">'key'</span> <span class="keyword">in</span> cache)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">`Key <span class="subst">$&#123;key&#125;</span> not found`</span>;</span><br><span class="line">                   <span class="keyword">return</span> cache[key];</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;)</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>Chúng ta có thể dễ dàng nhìn thấy, đây chính là <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures?retiredLocale=vi" target="_blank" rel="noopener">Closure function</a>. Ngay cả khi hàm <code>memorizedFn</code> đã được gọi, thì biến cache vẫn không bị giải phóng khỏi bộ nhớ, và chúng vẫn tiếp tục được sửa dụng trong function return.</p>
+<h3 id="React’s-memoization"><a href="#React’s-memoization" class="headerlink" title="React’s memoization"></a>React’s memoization</h3><p>React có 3 API để ghi nhớ: <code>useMemo</code> và <code>useCallback</code>.<br>Memo hay React.memo là một higher order component, giúp tăng hiệu suất trong một số trường hợp bằng cách ghi nhớ kết quả. Điều này có nghĩa là React sẽ bỏ qua việc render component và sử dụng lại kết quả được render cuối cùng.</p>
+<h4 id="userCallback"><a href="#userCallback" class="headerlink" title="userCallback"></a>userCallback</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> makeFetchRequest = React.useCallback(<span class="function"><span class="params">()</span> =&gt;</span> (</span><br><span class="line">   	body ? fetch(<span class="string">'/post'</span>, fetchConfig) : <span class="literal">null</span>),</span><br><span class="line">       [body, fetchConfig],</span><br><span class="line">   ]</span><br><span class="line"> )</span><br></pre></td></tr></table></figure>
+<p><code>userCallback</code> nhận vào 2 đối số, thứ nhất là function cần ghi nhớ, thứ hai là mảng các phụ thuộc, nghĩa là nếu item trong mảng này thay đổi, hàm sẽ ngay lập tức được render lại.</p>
+<blockquote>
+<p>Nếu viết như dưới đây, thì hàm sẽ chỉ được init một lần.</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> makeFetchRequest = React.useCallback(<span class="function"><span class="params">()</span> =&gt;</span> (</span><br><span class="line">   	body ? fetch(<span class="string">'/post'</span>, fetchConfig) : <span class="literal">null</span>),</span><br><span class="line">       [],</span><br><span class="line">   ]</span><br><span class="line"> )</span><br></pre></td></tr></table></figure>
+
+<h4 id="useMemo"><a href="#useMemo" class="headerlink" title="useMemo"></a>useMemo</h4><p>Hãy bắt đầu với vấn đề đầu tiên và xem cách nào để chặn đánh giá lại những function không cần thiết.</p>
+<p>Trong demo sau, chúng ta có một component với 2 states: 1 state lưu trữ một number, 1 state lưu trữ một boolean.</p>
+<p>Chúng ta cần làm một vài tính toán cho state, vì vậy cần gọi hàm plusFive và render ra kết quả.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> plusFive = <span class="function">(<span class="params">num</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"I was called!"</span>);</span><br><span class="line">  <span class="keyword">return</span> num + <span class="number">5</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">App</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [num, setNum] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [light, setLight] = useState(<span class="literal">true</span>);</span><br><span class="line">  <span class="keyword">const</span> numPlusFive = plusFive(num);</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">  	&lt;&gt;&#123;numPlusFive&#125;&lt;<span class="regexp">/&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br></pre></td></tr></table></figure>
+<p>Nếu bạn mở console, bạn sẽ thấy function plusFive được gọi khi click vào Update Number (set một giá trị mới cho biến number) , hoặc Toggle the light để thay đổi boolean (chú ý: nó không liên quan gì đến update number)</p>
+<p>Vậy làm thế nào để chặn điều này xảy ra? Bằng cách ghi nhớ lại (memoizing) plusFile, cho đến khi có một giá trị number mới thì lúc đấy mới gọi plusFile, ngay lập tức chúng ta sẽ nhận được kết quả</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> numPlusFive = useMemo(<span class="function"><span class="params">()</span> =&gt;</span> plusFive(num), [num]);</span><br></pre></td></tr></table></figure>
+<p><code>useMemo</code> nhận vào 2 tham số: 1 là function trả về một lời gọi hàm (plusFive), 2 là một mảng phụ thuộc. Chỉ khi nào mảng phụ thuộc thay đổi, thì function mới được gọi. useMemo sẽ trả về kết quả của việc thực hiện gọi hàm và lưu vào bộ nhớ để ngăn hàm gọi lại khi sử dụng cùng một mảng phụ thuộc (hay mảng phụ thuộc không thay đổi).</p>
+<h4 id="Video"><a href="#Video" class="headerlink" title="Video"></a>Video</h4><p><a href="https://www.youtube.com/watch?v=kcQyM7IN3s8&list=PLWMM2vKkNM5iOUPwFLv-p3X40ewurMTto" target="_blank" rel="noopener"><img src="https://www.qed42.com/sites/default/files/2020-03/React%20Memoization%20.png" alt="IMAGE_ALT"></a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/04/Fix-loi-undefined-khi-dung-thu-vien-ben-thu-3/" rel="next" title="Fix lỗi undefined khi dùng thư viện bên thứ 3">
+                <i class="fa fa-chevron-left"></i> Fix lỗi undefined khi dùng thư viện bên thứ 3
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Dung Nguyen" />
+          <p class="site-author-name" itemprop="name">Dung Nguyen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mo-dau"><span class="nav-number">1.</span> <span class="nav-text">Mở đầu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memorized-function"><span class="nav-number">2.</span> <span class="nav-text">Memorized function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#React’s-memoization"><span class="nav-number">3.</span> <span class="nav-text">React’s memoization</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#userCallback"><span class="nav-number">3.1.</span> <span class="nav-text">userCallback</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#useMemo"><span class="nav-number">3.2.</span> <span class="nav-text">useMemo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Video"><span class="nav-number">3.3.</span> <span class="nav-text">Video</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Dung Nguyen</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
