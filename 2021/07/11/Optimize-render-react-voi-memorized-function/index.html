@@ -105,7 +105,7 @@
 <meta property="og:image" content="https://dungnt11.github.io/images/pasted-22.png">
 <meta property="og:image" content="https://www.qed42.com/sites/default/files/2020-03/React%20Memoization%20.png">
 <meta property="article:published_time" content="2021-07-11T16:17:25.000Z">
-<meta property="article:modified_time" content="2021-07-11T16:48:50.838Z">
+<meta property="article:modified_time" content="2021-07-11T16:52:07.301Z">
 <meta property="article:author" content="Dung Nguyen">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://dungnt11.github.io/images/pasted-21.png">
@@ -357,7 +357,7 @@
 <p>Vậy làm thế nào để chặn điều này xảy ra? Bằng cách ghi nhớ lại (memoizing) plusFile, cho đến khi có một giá trị number mới thì lúc đấy mới gọi plusFile, ngay lập tức chúng ta sẽ nhận được kết quả</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> numPlusFive = useMemo(<span class="function"><span class="params">()</span> =&gt;</span> plusFive(num), [num]);</span><br></pre></td></tr></table></figure>
 <p><code>useMemo</code> nhận vào 2 tham số: 1 là function trả về một lời gọi hàm (plusFive), 2 là một mảng phụ thuộc. Chỉ khi nào mảng phụ thuộc thay đổi, thì function mới được gọi. useMemo sẽ trả về kết quả của việc thực hiện gọi hàm và lưu vào bộ nhớ để ngăn hàm gọi lại khi sử dụng cùng một mảng phụ thuộc (hay mảng phụ thuộc không thay đổi).</p>
-<h4 id="Video"><a href="#Video" class="headerlink" title="Video"></a>Video</h4><p><a href="https://www.youtube.com/watch?v=kcQyM7IN3s8&list=PLWMM2vKkNM5iOUPwFLv-p3X40ewurMTto" target="_blank" rel="noopener"><img src="https://www.qed42.com/sites/default/files/2020-03/React%20Memoization%20.png" alt="IMAGE_ALT"></a></p>
+<h4 id="Video"><a href="#Video" class="headerlink" title="Video"></a><a href="https://www.youtube.com/watch?v=kcQyM7IN3s8&list=PLWMM2vKkNM5iOUPwFLv-p3X40ewurMTto" target="_blank" rel="noopener">Video</a></h4><p><a href="https://www.youtube.com/watch?v=kcQyM7IN3s8&list=PLWMM2vKkNM5iOUPwFLv-p3X40ewurMTto" target="_blank" rel="noopener"><img src="https://www.qed42.com/sites/default/files/2020-03/React%20Memoization%20.png" alt="IMAGE_ALT"></a></p>
 
       
     </div>
